@@ -1,6 +1,6 @@
 #declare variable
 EXE := main
-OBJS := main.o solution.o Linked_List.o AdjList.o
+OBJS := Linked_List.o AdjList.o solution.o main.o
 OBJS_DIR := .objs
 INC_DIR := ./include ../../../Linked_List/include/ ../../../Adjacent_List/include
 
