@@ -5,4 +5,4 @@ make
 
 
 #run formal released case
-./main ./Median.txt > ./test.ans.log
+./main ./Median.txt > ./test.ans.rerun.log

@@ -6,7 +6,6 @@
 #include <vector>
 #include <solution.h>
 #include <unordered_set>
-#include <MinHeap.h>
 
 //All of the input numbers from input text file.
 std::vector<int> input_num_list;

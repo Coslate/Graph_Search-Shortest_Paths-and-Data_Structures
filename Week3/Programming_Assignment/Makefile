@@ -2,7 +2,7 @@
 EXE := main
 OBJS := solution.o main.o
 OBJS_DIR := .objs
-INC_DIR := ./include ../../../Min_Heap ../../../Min_Heap/include
+INC_DIR := ../../../Linked_List/include ./include ../../../Min_Heap ../../../Min_Heap/include
 
 CC = g++
 INCLUDE_FLAGS = $(foreach d, $(INC_DIR), -I $d)
