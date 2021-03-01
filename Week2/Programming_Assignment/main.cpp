@@ -4,9 +4,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <AdjList.h>
-#include <solution.h>
 #include <unordered_set>
+#include <solution.h>
 
 bool debug_addr     = false;
 bool debug_key      = true;
@@ -49,6 +48,9 @@ std::unordered_map<std::string, std::string> shortest_path_prec;
 
 //Declare a new adjacent list to represent Graph(V, E).
 AdjList adj_list(directed, false);
+
+//Decleare a MinHeap to store the uncovered set with key value = shortest path.
+MinHeap<LinkedListNode> min_heap;
 
 void ReadFile(std::string filename){
     std::string line;
@@ -93,9 +95,15 @@ int main(int argc, char*argv[]){
         std::cerr<<"Error: There should be at least one input argument like ./main arg1."<<std::endl;
         return EXIT_FAILURE;
     }
+    
+    int method = 1;//1: Naive Based, 2: MinHeap Based
+    if( (argc > 2) && (strcmp(argv[2], "-method") == 0)){
+        method = atoi(argv[3]);
+    }
+    std::cout<<"method = "<<method<<std::endl;
 
     ReadFile(argv[1]);
-    BuildAdjList(map_node_st2lln, input_edge_list, adj_list, set_weight);
+    BuildAdjList(map_node_st2lln, input_edge_list, adj_list, set_weight, method);
 
     std::cout<<"----------input_edge_list------------"<<std::endl;
     std::cout<<"----------------------"<<std::endl;
@@ -127,13 +135,17 @@ int main(int argc, char*argv[]){
     std::cout<<"----------------------"<<std::endl;
     std::cout<<"> Initialization..."<<std::endl;
     std::cout<<"source : "<<input_edge_list[0][0]<<std::endl;
-    myset.insert(input_edge_list[0][0]);
-    shortest_path_dist[input_edge_list[0][0]] = 0;
 
     for (auto element : map_node_st2lln) {
+        LinkedListNode* the_node = element.second;
         std::string node_name = element.first;
         if(node_name.compare(input_edge_list[0][0]) != 0){//different with source node
             uncovered_set.insert(node_name);
+        }
+
+        //Build the MinHeap
+        if(method == 2){
+            min_heap.Insert(*the_node);
         }
     }
 
@@ -142,7 +154,16 @@ int main(int argc, char*argv[]){
     }
 
     std::cout<<"> Calculating Dijkstra..."<<std::endl;
-    DijkstraNaiveImplementation(myset, uncovered_set, shortest_path_dist, shortest_path_prec, adj_list, map_node_st2lln.size(), map_node_st2lln);
+    if(method == 1){
+        std::cout<<">> Using Naive based(-method 1)..."<<std::endl;
+        myset.insert(input_edge_list[0][0]);
+        shortest_path_dist[input_edge_list[0][0]] = 0;
+        DijkstraNaiveImplementation(myset, uncovered_set, shortest_path_dist, shortest_path_prec, adj_list, map_node_st2lln.size(), map_node_st2lln);
+    }else if(method == 2){
+        std::cout<<">> Using Heap based(-method 2)..."<<std::endl;
+        min_heap.DecreaseKey(input_edge_list[0][0], 0);//start from the '1' node
+        DijkstraHeapImplementation(myset, uncovered_set, shortest_path_dist, shortest_path_prec, adj_list, map_node_st2lln.size(), map_node_st2lln, min_heap);
+    }
 
     std::cout<<"> Show the result..."<<std::endl;
     std::vector<std::string> result_str_vec;

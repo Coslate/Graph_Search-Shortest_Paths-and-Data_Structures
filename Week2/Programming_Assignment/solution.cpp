@@ -1,13 +1,15 @@
 //solution.cpp
 #include <solution.h>
+#include <algorithm>
 
 //used in Week2/Programming_Assignment
-void BuildAdjList(std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln, const std::vector<std::vector<std::string>> &input_edge_list, AdjList &adj_list, const bool set_weight){
+void BuildAdjList(std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln, const std::vector<std::vector<std::string>> &input_edge_list, AdjList &adj_list, const bool set_weight, const int method){
     //Build the mapping of node_name -> address for all nodes.
     for (auto &itRow : input_edge_list){
         for (size_t i=0; i<itRow.size()-1;++i){//only [0] & [1] are vertices, [2] is the weight of the edge from [0] -> [1].
             if(map_node_st2lln.find(itRow[i]) == map_node_st2lln.end()){//not found
-                LinkedListNode* new_node = new LinkedListNode(0, itRow[i]);
+                int node_data = (method==1) ? 0 : 100000;//100000 is defined by the question. If a vertex v cannot be reached by source vertex, then the distance is 100000.
+                LinkedListNode* new_node = new LinkedListNode(node_data, itRow[i]);
                 map_node_st2lln[itRow[i]] = new_node;
             }
         }
@@ -359,7 +361,7 @@ void DijkstraNaiveImplementation(std::unordered_set<std::string> &myset, std::un
         }
 
         if(all_node_in_myset_cannot_reach && (uncovered_set.size() != 0)){
-            for(auto &elem : uncovered_set){
+            for(const auto &elem : uncovered_set){
                 shortest_path_dist[elem] = 1000000;
                 shortest_path_prec[elem] = "-Cannot_Be_Reached_From_Source--";
             }
@@ -369,6 +371,48 @@ void DijkstraNaiveImplementation(std::unordered_set<std::string> &myset, std::un
             uncovered_set.erase(min_path_node);
             shortest_path_dist[min_path_node] = min_path_dist;
             shortest_path_prec[min_path_node] = min_path_prec;
+        }
+    }
+}
+
+void DijkstraHeapImplementation(std::unordered_set<std::string> &myset, std::unordered_set<std::string> &uncovered_set, std::unordered_map<std::string, int> &shortest_path_dist, std::unordered_map<std::string, std::string> &shortest_path_prec, AdjList &adj_list, const int total_vertex_size, std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln, MinHeap<LinkedListNode> &min_heap){
+    std::unordered_set<std::string> reach_once_set;
+
+    while(int(myset.size()) != total_vertex_size){
+        LinkedListNode min_path_node   = min_heap.ExtractMin();
+        std::string min_path_node_name = min_path_node.GetName();
+        int         min_path_node_dist = min_path_node.GetData();
+
+        myset.insert(min_path_node_name);
+        uncovered_set.erase(min_path_node_name);
+        shortest_path_dist[min_path_node_name] = min_path_node_dist;
+        if(reach_once_set.find(min_path_node_name) == reach_once_set.end()){//not seen before
+            shortest_path_prec[min_path_node_name] = "NA";
+            reach_once_set.insert(min_path_node_name);
+        }
+        
+        //Traversing all the adjacent nodes.
+        LinkedListNode *proc_node = map_node_st2lln[min_path_node_name];
+        LinkedList* the_linked_list = adj_list.ReadAdjList(proc_node);
+
+        if(the_linked_list == NULL){
+            std::cout<<"The proc_node: "<<proc_node->GetName()<<"("<<proc_node<<")"<<", explored = "<<proc_node->GetExplored()<<", has no adjacent List."<<std::endl;
+        }
+
+        if(the_linked_list != NULL){
+            LinkedListNode* current_node = the_linked_list->GetFristNode();
+            while(current_node != NULL){
+                if(uncovered_set.find(current_node->GetName()) != uncovered_set.end()){//find a node in uncovered_set
+                    int orig_min_path_dist = min_heap.GetDataFromMap(current_node->GetName()).GetData();
+                    int new_min_path_dist  = min_path_node_dist+current_node->GetData();
+                    if(new_min_path_dist < orig_min_path_dist){
+                        min_heap.DecreaseKey(current_node->GetName(), new_min_path_dist);
+                        shortest_path_prec[current_node->GetName()] = min_path_node_name;
+                        reach_once_set.insert(current_node->GetName());
+                    }
+                }
+                current_node = current_node->GetNext();
+            }
         }
     }
 }

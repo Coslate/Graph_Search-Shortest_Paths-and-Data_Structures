@@ -9,10 +9,11 @@
 #include <iostream>
 #include <algorithm>
 #include <stack> 
+#include <MinHeap.h>
 
 void BuildAdjList(std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln, const std::vector<std::vector<std::string>> &input_edge_list, AdjList &adj_list, AdjList &adj_list_rev, const bool set_weight=false);
 
-void BuildAdjList(std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln, const std::vector<std::vector<std::string>> &input_edge_list, AdjList &adj_list, const bool set_weight=false);
+void BuildAdjList(std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln, const std::vector<std::vector<std::string>> &input_edge_list, AdjList &adj_list, const bool set_weight=false, const int method=1);
 
 void DFS(std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln, AdjList &adj_list, LinkedListNode *invoke_node, LinkedListNode *first_invoke_node, std::unordered_map<LinkedListNode*, LinkedListNode*> &map_leader_lln2lln, int &finish_time, std::unordered_map<LinkedListNode*, int> &map_lln2ft, std::unordered_map<int, LinkedList*> &map_ft2ll, const bool cal_finish_time);
 
@@ -31,5 +32,7 @@ void CollectResult(std::unordered_map<LinkedListNode*, LinkedListNode*> &map_lea
 void PrintResult(std::unordered_map<LinkedListNode*, LinkedList*> &map_leader2scc, std::vector<int> &scc_size_result);
 
 void DijkstraNaiveImplementation(std::unordered_set<std::string> &myset, std::unordered_set<std::string> &uncovered_set, std::unordered_map<std::string, int> &shortest_path_dist, std::unordered_map<std::string, std::string> &shortest_path_prec, AdjList &adj_list, const int total_vertex_size, std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln);
+
+void DijkstraHeapImplementation(std::unordered_set<std::string> &myset, std::unordered_set<std::string> &uncovered_set, std::unordered_map<std::string, int> &shortest_path_dist, std::unordered_map<std::string, std::string> &shortest_path_prec, AdjList &adj_list, const int total_vertex_size, std::unordered_map<std::string, LinkedListNode*> &map_node_st2lln, MinHeap<LinkedListNode> &min_heap);
 
 #endif
