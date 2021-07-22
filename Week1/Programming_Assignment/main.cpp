@@ -12,6 +12,7 @@ bool debug_key      = true;
 bool debug_name     = true;
 bool debug_explored = true;
 bool directed       = true;
+bool show_debug_msg = false;
 
 std::vector<std::vector<std::string>> input_edge_list;
 
@@ -33,8 +34,8 @@ std::unordered_map<LinkedListNode*, LinkedList*> map_leader2scc;
 std::vector<int> scc_size_result;
 
 //Declare a new adjacent list to represent Graph(V, E).
-AdjList adj_list(directed, false);
-AdjList adj_list_rev(directed, false);
+AdjList adj_list(directed, show_debug_msg);
+AdjList adj_list_rev(directed, show_debug_msg);
 
 void ReadFile(std::string filename){
     std::string line;
@@ -64,7 +65,10 @@ int main(int argc, char*argv[]){
     int finish_time = 0;
     int method = 1;
 
+    std::cout<<"> ReadFile..."<<std::endl;
     ReadFile(argv[1]);
+
+    std::cout<<"> BuildAdjList..."<<std::endl;
     BuildAdjList(map_node_st2lln, input_edge_list, adj_list, adj_list_rev);
 
     if(strcmp(argv[2], "-method") == 0){
@@ -78,6 +82,7 @@ int main(int argc, char*argv[]){
     }
 */
 
+    std::cout<<"> Kosaraju's Algo..."<<std::endl;
     std::cout<<"-----------1st-------------"<<std::endl;
     //1st DFSLoop - To calculate the finish time.
     if(method == 1){
@@ -108,8 +113,10 @@ int main(int argc, char*argv[]){
 */
 
 
+    std::cout<<"> CollectResult..."<<std::endl;
     CollectResult(map_leader_lln2lln, map_leader2scc);
 
+    std::cout<<"> PrintResult..."<<std::endl;
     PrintResult(map_leader2scc, scc_size_result);
 /*
     std::cout<<"-----------------adj_list, AdjList::PrintAdjList, node: 21081-----------------"<<std::endl;
@@ -120,5 +127,22 @@ int main(int argc, char*argv[]){
 */
 
     std::cout<<"input_edge_list.size() = "<<input_edge_list.size()<<std::endl;
+
+    //Release heap memory
+    for(auto &elem : map_node_st2lln){
+        LinkedListNode *the_node = elem.second;
+        delete the_node;
+    }
+
+    for(auto &elem : map_ft2ll){
+        LinkedList *the_ll = elem.second;
+        delete the_ll;
+    }
+
+    for(auto &elem : map_leader2scc){
+        LinkedList *the_ll = elem.second;
+        delete the_ll;
+    }
+
     return EXIT_SUCCESS;
 }

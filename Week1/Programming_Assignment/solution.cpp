@@ -233,7 +233,7 @@ void ResetAllNodeToUnexplored(std::unordered_map<std::string, LinkedListNode*> &
 }
 
 void CollectResult(std::unordered_map<LinkedListNode*, LinkedListNode*> &map_leader_lln2lln, std::unordered_map<LinkedListNode*, LinkedList*> &map_leader2scc){
-    for (auto element : map_leader_lln2lln) {
+    for(auto element : map_leader_lln2lln){
         LinkedListNode* invoke_node = element.first;
         LinkedListNode* leader_node = element.second;
 
@@ -249,7 +249,7 @@ void CollectResult(std::unordered_map<LinkedListNode*, LinkedListNode*> &map_lea
 }
 
 void PrintResult(std::unordered_map<LinkedListNode*, LinkedList*> &map_leader2scc, std::vector<int> &scc_size_result){
-    for (auto element : map_leader2scc) {
+    for(auto element : map_leader2scc){
         LinkedListNode* leader_node     = element.first;
         LinkedList* the_linked_list     = element.second;
 
